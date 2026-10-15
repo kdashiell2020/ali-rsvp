@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src https://dauvsboeeuimrkykkqlh.functions.supabase.co; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"
+    >
+    <title>Confirm your spot · After Life Initiative</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main class="card" aria-labelledby="page-title">
+      <header class="brand-bar">
+        <div class="brand-mark" aria-hidden="true">ALi</div>
+        <div>
+          <p>After Life Initiative</p>
+          <strong>Topgolf Wellness Event</strong>
+        </div>
+      </header>
+
+      <section class="content">
+        <div id="loading" class="state-panel" role="status" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <p>Loading your RSVP…</p>
+        </div>
+
+        <div id="error" class="state-panel" hidden>
+          <p class="eyebrow">RSVP assistance</p>
+          <h1 id="error-title">We couldn’t open this link</h1>
+          <p id="error-message">
+            Please try the link again or contact our team for help.
+          </p>
+          <a class="support-link" href="mailto:support@ali-ca.org">Email support@ali-ca.org</a>
+        </div>
+
+        <div id="rsvp" hidden>
+          <p class="eyebrow">Member wellness event</p>
+          <h1 id="page-title">Confirm your spot</h1>
+          <p id="intro" class="intro">
+            Please confirm that the member information below is yours. Nothing is recorded until you press the confirmation button.
+          </p>
+
+          <div class="facts" aria-label="Event details">
+            <div class="fact">
+              <span class="label">Member</span>
+              <span id="member" class="value"></span>
+            </div>
+            <div class="fact">
+              <span class="label">Date &amp; time</span>
+              <span id="schedule" class="value"></span>
+            </div>
+            <div class="fact">
+              <span class="label">Where</span>
+              <a
+                id="location"
+                class="value location-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              ></a>
+            </div>
+            <div class="fact">
+              <span class="label">Availability</span>
+              <span id="availability" class="value">25 spots · First come, first served</span>
+            </div>
+          </div>
+
+          <div id="action-area" class="action-area">
+            <button id="confirm-button" type="button">Confirm my spot</button>
+            <p class="privacy-note">This secure link is personal to you.</p>
+          </div>
+
+          <div id="outcome" class="outcome" role="status" aria-live="polite" hidden>
+            <span id="outcome-icon" class="outcome-icon" aria-hidden="true">✓</span>
+            <h2 id="outcome-title"></h2>
+            <p id="outcome-message"></p>
+          </div>
+
+          <p class="help">
+            Not you, or need a correction?
+            <a href="mailto:support@ali-ca.org">Email support@ali-ca.org</a>.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
