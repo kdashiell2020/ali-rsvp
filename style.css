@@ -49,16 +49,11 @@ body {
 }
 
 .brand-mark {
-  width: 58px;
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
+  width: 80px;
+  height: 80px;
+  display: block;
   flex: 0 0 auto;
-  border: 2px solid var(--gold);
-  border-radius: 50%;
-  color: var(--gold);
-  font: 700 1.15rem/1 Georgia, serif;
-  letter-spacing: -0.08em;
+  object-fit: contain;
 }
 
 .brand-bar p {
@@ -262,7 +257,8 @@ button:disabled {
   }
 
   .brand-mark {
-    width: 50px;
+    width: 64px;
+    height: 64px;
   }
 
   .content {
