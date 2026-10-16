@@ -8,7 +8,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; connect-src https://dauvsboeeuimrkykkqlh.functions.supabase.co; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"
     >
-    <title>Confirm your spot · After Life Initiative</title>
+    <title>Your RSVP · After Life Initiative</title>
     <link rel="stylesheet" href="./style.css">
   </head>
   <body>
@@ -44,10 +44,15 @@
 
         <div id="rsvp" hidden>
           <p class="eyebrow">Member wellness event</p>
-          <h1 id="page-title">Confirm your spot</h1>
+          <h1 id="page-title">Your RSVP</h1>
           <p id="intro" class="intro">
             Please confirm that the member information below is yours. Nothing is recorded until you press the confirmation button.
           </p>
+
+          <div id="full-notice" hidden>
+            <p class="intro">Unfortunately, all spots for our October 24 Topgolf outing have been filled.</p>
+            <p>We’ve got you in mind for next time! Keep an eye out for more opportunities to connect and spend time with the ALI community.</p>
+          </div>
 
           <div class="facts" aria-label="Event details">
             <div class="fact">
@@ -69,12 +74,12 @@
             </div>
             <div class="fact">
               <span class="label">Availability</span>
-              <span id="availability" class="value">25 spots · First come, first served</span>
+              <span id="availability" class="value">Checking availability…</span>
             </div>
           </div>
 
           <div id="action-area" class="action-area">
-            <button id="confirm-button" type="button">Confirm my spot</button>
+            <button id="confirm-button" type="button">Submit RSVP</button>
             <p class="privacy-note">This secure link is personal to you.</p>
           </div>
 
@@ -82,6 +87,12 @@
             <span id="outcome-icon" class="outcome-icon" aria-hidden="true">✓</span>
             <h2 id="outcome-title"></h2>
             <p id="outcome-message"></p>
+          </div>
+
+          <div id="cancellation-note" hidden>
+            <p>Already confirmed but can no longer attend?<br>
+            Please email <a href="mailto:support@ali-ca.org">support@ali-ca.org</a> so we can make your spot available to another member.</p>
+            <p>Thank you for helping us make room for one another.</p>
           </div>
 
           <p class="help">
@@ -92,6 +103,6 @@
       </section>
     </main>
 
-    <script src="./app.js" defer></script>
+    <script src="./app.js?v=20261016-full" defer></script>
   </body>
 </html>
