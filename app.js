@@ -8,6 +8,9 @@ const elements = {
   errorMessage: document.querySelector("#error-message"),
   rsvp: document.querySelector("#rsvp"),
   intro: document.querySelector("#intro"),
+  pageTitle: document.querySelector("#page-title"),
+  fullNotice: document.querySelector("#full-notice"),
+  cancellationNote: document.querySelector("#cancellation-note"),
   member: document.querySelector("#member"),
   schedule: document.querySelector("#schedule"),
   location: document.querySelector("#location"),
@@ -71,6 +74,9 @@ function isWaitlisted(status) {
 function showOutcome(status, position, duplicate = false) {
   const waitlisted = isWaitlisted(status);
   elements.actionArea.hidden = true;
+  elements.pageTitle.textContent = waitlisted
+    ? "You’re on the waitlist"
+    : "Your spot is confirmed";
   elements.intro.textContent = duplicate
     ? "Your response was already recorded. Here are your current RSVP details."
     : "Your response has been saved.";
@@ -85,11 +91,25 @@ function showOutcome(status, position, duplicate = false) {
   elements.outcome.hidden = false;
 }
 
+function isTopgolfFull(data) {
+  return data.eventSlug === "topgolf-wellness-2026-10-24" && data.isFull === true;
+}
+
 function render(data) {
   preview = data;
   elements.member.textContent = `${data.fullName} · ${data.email}`;
   elements.schedule.textContent = formatSchedule(data);
-  elements.availability.textContent = `${data.capacity} spots · First come, first served`;
+  elements.availability.textContent = data.isFull
+    ? "Event full"
+    : `${data.capacity} member places total · First come, first served`;
+  elements.pageTitle.textContent = "Your RSVP";
+  elements.confirmButton.textContent = "Submit RSVP";
+  elements.intro.hidden = false;
+  elements.fullNotice.hidden = true;
+  elements.cancellationNote.hidden = true;
+  elements.outcome.hidden = true;
+  elements.actionArea.hidden = false;
+  elements.intro.textContent = "Please check that the member information below is yours. Nothing is recorded until you submit your RSVP.";
 
   if (data.location) {
     elements.location.textContent = data.location;
@@ -103,10 +123,21 @@ function render(data) {
   elements.error.hidden = true;
   elements.rsvp.hidden = false;
 
-  if (data.existingStatus && Number.isInteger(data.existingPosition)) {
+  if (data.existingStatus === "CONFIRMED" && Number.isInteger(data.existingPosition)) {
+    showOutcome(data.existingStatus, data.existingPosition, true);
+    elements.cancellationNote.hidden = false;
+  } else if (isTopgolfFull(data)) {
+    elements.pageTitle.textContent = "This Topgolf event is now full";
+    elements.intro.hidden = true;
+    elements.fullNotice.hidden = false;
+    elements.cancellationNote.hidden = false;
+    elements.actionArea.hidden = true;
+  } else if (data.existingStatus && Number.isInteger(data.existingPosition)) {
     showOutcome(data.existingStatus, data.existingPosition, true);
   } else if (!data.isOpen) {
     elements.actionArea.hidden = true;
+    elements.pageTitle.textContent = "Registration closed";
+    elements.availability.textContent = "Registration closed";
     elements.intro.textContent = "Registration for this event is closed.";
   }
 }
@@ -160,6 +191,10 @@ async function confirmSpot() {
       throw new Error(payload?.error?.message ?? "Your RSVP could not be saved.");
     }
     preview = payload.data.preview;
+    if (isTopgolfFull(preview) && preview.existingStatus !== "CONFIRMED") {
+      render(preview);
+      return;
+    }
     showOutcome(
       payload.data.result.signup_status,
       payload.data.result.submission_position,
@@ -167,7 +202,7 @@ async function confirmSpot() {
     );
   } catch (error) {
     elements.confirmButton.disabled = false;
-    elements.confirmButton.textContent = "Confirm my spot";
+    elements.confirmButton.textContent = "Submit RSVP";
     showError(
       "We couldn’t save your RSVP",
       error instanceof Error
