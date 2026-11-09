@@ -12,6 +12,7 @@ const elements = {
   fullNotice: document.querySelector("#full-notice"),
   cancellationNote: document.querySelector("#cancellation-note"),
   member: document.querySelector("#member"),
+  eventName: document.querySelector("#event-name"),
   schedule: document.querySelector("#schedule"),
   location: document.querySelector("#location"),
   availability: document.querySelector("#availability"),
@@ -24,6 +25,11 @@ const elements = {
 };
 
 let preview = null;
+const KICKBOXING_EVENT = "kickboxing-wellness-2026-11-14";
+
+function isKickboxing(data) {
+  return data.eventSlug === KICKBOXING_EVENT;
+}
 
 function apiUrl() {
   const url = new URL(API_URL);
@@ -72,6 +78,19 @@ function isWaitlisted(status) {
 }
 
 function showOutcome(status, position, duplicate = false) {
+  if (isKickboxing(preview)) {
+    elements.actionArea.hidden = true;
+    elements.pageTitle.textContent = "Your availability is recorded";
+    elements.intro.textContent = duplicate
+      ? "You already told us you can make it."
+      : "Thanks for letting us know you can make it. This is an availability poll; we'll share final class details once plans are confirmed.";
+    elements.outcome.classList.remove("waitlist");
+    elements.outcomeIcon.textContent = "✓";
+    elements.outcomeTitle.textContent = "We saved your response";
+    elements.outcomeMessage.textContent = "Saturday, November 14 at 2 PM in Downey. No class spot is reserved yet.";
+    elements.outcome.hidden = false;
+    return;
+  }
   const waitlisted = isWaitlisted(status);
   elements.actionArea.hidden = true;
   elements.pageTitle.textContent = waitlisted
@@ -97,19 +116,26 @@ function isTopgolfFull(data) {
 
 function render(data) {
   preview = data;
+  elements.eventName.textContent = data.title;
   elements.member.textContent = `${data.fullName} · ${data.email}`;
   elements.schedule.textContent = formatSchedule(data);
-  elements.availability.textContent = data.isFull
+  elements.availability.textContent = isKickboxing(data)
+    ? "We’re checking who can attend"
+    : data.isFull
     ? "Event full"
     : `${data.capacity} member places total · First come, first served`;
   elements.pageTitle.textContent = "Your RSVP";
-  elements.confirmButton.textContent = "Submit RSVP";
+  elements.confirmButton.textContent = isKickboxing(data)
+    ? "Confirm I can make it"
+    : "Submit RSVP";
   elements.intro.hidden = false;
   elements.fullNotice.hidden = true;
   elements.cancellationNote.hidden = true;
   elements.outcome.hidden = true;
   elements.actionArea.hidden = false;
-  elements.intro.textContent = "Please check that the member information below is yours. Nothing is recorded until you submit your RSVP.";
+  elements.intro.textContent = isKickboxing(data)
+    ? "Please check your name and email below. Press the button to tell us you can attend. This is an availability poll, not a reserved spot."
+    : "Please check that the member information below is yours. Nothing is recorded until you submit your RSVP.";
 
   if (data.location) {
     elements.location.textContent = data.location;
@@ -123,7 +149,9 @@ function render(data) {
   elements.error.hidden = true;
   elements.rsvp.hidden = false;
 
-  if (data.existingStatus === "CONFIRMED" && Number.isInteger(data.existingPosition)) {
+  if (isKickboxing(data) && data.existingStatus) {
+    showOutcome(data.existingStatus, data.existingPosition, true);
+  } else if (data.existingStatus === "CONFIRMED" && Number.isInteger(data.existingPosition)) {
     showOutcome(data.existingStatus, data.existingPosition, true);
     elements.cancellationNote.hidden = false;
   } else if (isTopgolfFull(data)) {
@@ -202,7 +230,9 @@ async function confirmSpot() {
     );
   } catch (error) {
     elements.confirmButton.disabled = false;
-    elements.confirmButton.textContent = "Submit RSVP";
+    elements.confirmButton.textContent = isKickboxing(preview)
+      ? "Confirm I can make it"
+      : "Submit RSVP";
     showError(
       "We couldn’t save your RSVP",
       error instanceof Error
